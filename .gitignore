@@ -1,0 +1,27 @@
+# Node.js
+node_modules/
+npm-debug.log
+
+# Environment files
+.env
+.env.local
+.env*.local
+
+# Docker
+docker-compose.override.yml
+
+# IDE/Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Additional 
+dist/
+coverage/
+*.tmp
+*.tsbuildinfo
