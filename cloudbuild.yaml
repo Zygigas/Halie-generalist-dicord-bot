@@ -28,6 +28,8 @@ steps:
 # Optional: Clean up old images
 options:
   substitutionOption: ALLOW_LOOSE
+  logging: CLOUD_LOGGING_ONLY 
+  substitution_option: ALLOW_LOOSE
 
 substitutions:
   _DISCORD_TOKEN: 'DISCORD_TOKEN'  # Will be replaced by secret
