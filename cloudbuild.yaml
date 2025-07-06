@@ -16,10 +16,10 @@ steps:
       - '--zone=us-west1-c' 
       - '--command'
       - |
-        docker stop discord-bot || true
-        docker rm discord-bot || true
-        docker pull gcr.io/$PROJECT_ID/discord-bot:$COMMIT_SHA
-        docker run -d \
+        sudo docker stop discord-bot || true
+        sudo docker rm discord-bot || true
+        sudo docker pull gcr.io/$PROJECT_ID/discord-bot:$COMMIT_SHA
+        sudo docker run -d \
           --name discord-bot \
           --restart unless-stopped \
           -e DISCORD_TOKEN=${_DISCORD_TOKEN} \
