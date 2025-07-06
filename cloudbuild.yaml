@@ -14,7 +14,6 @@ steps:
       - 'ssh'
       - 'discord-bot-instance'
       - '--zone=us-west1-c' 
-      - '--tunnel-through-iap'
       - '--command'
       - |
         docker stop discord-bot || true
