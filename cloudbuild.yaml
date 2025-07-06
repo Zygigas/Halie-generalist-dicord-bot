@@ -16,6 +16,7 @@ steps:
       - '--zone=us-west1-c' 
       - '--command'
       - |
+        sudo gcloud auth configure-docker --quiet
         sudo docker stop discord-bot || true
         sudo docker rm discord-bot || true
         sudo docker pull gcr.io/$PROJECT_ID/discord-bot:$COMMIT_SHA
