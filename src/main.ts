@@ -47,8 +47,5 @@ client.on('error', (error) => {
   console.error('Discord.js error:', error);
 });
 
-// Strip ALL non-visible characters
-const token = `${process.env.DISCORD_TOKEN?.replace(/[^\x20-\x7E]/g, '')}`;
-
-client.login(token);
+client.login(process.env.DISCORD_TOKEN);
 deployCommands();
