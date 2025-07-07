@@ -6,16 +6,6 @@ steps:
   # Push to Container Registry
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/discord-bot:$COMMIT_SHA']
-  
-  - name: Trigger Google Cloud Build
-    run: |-
-      gcloud builds submit \
-      --substitutions=_DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }} \
-      --config=cloudbuild.yaml .
-
-  #debug verify discord token actually exists after build.
-  - name: 'ubuntu'
-    args: ['bash', '-c', 'echo "Token length received: ${#_DISCORD_TOKEN} characters"']
 
   # Deploy to Compute Engine
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -23,35 +13,42 @@ steps:
     args:
       - -c
       - |
-        # Create a temporary SSH key
+        # Create SSH directory and key
+        mkdir -p /root/.ssh
+        chmod 700 /root/.ssh
         ssh-keygen -t rsa -f /root/.ssh/id_rsa -q -N ""
         
-        # Add the public key to the instance metadata
+        # Add key to instance metadata
         gcloud compute instances add-metadata discord-bot-instance \
           --zone=us-west1-c \
           --metadata=ssh-keys="cloud-build:$(cat /root/.ssh/id_rsa.pub)"
         
-        # Wait for the metadata to propagate
-        sleep 30
-        
-        # SSH into the instance and deploy
+        # Execute deployment commands
         gcloud compute ssh discord-bot-instance \
           --zone=us-west1-c \
           --tunnel-through-iap \
           --ssh-key-file=/root/.ssh/id_rsa \
           --command="
-            sudo gcloud auth configure-docker --quiet
-            sudo docker stop discord-bot || true
-            sudo docker rm discord-bot || true
-            sudo docker pull gcr.io/$PROJECT_ID/discord-bot:$COMMIT_SHA
-            sudo docker run -d \
-              --name discord-bot \
-              --restart unless-stopped \
-              -e DISCORD_TOKEN=${_DISCORD_TOKEN} \
-              -e NODE_ENV=production \
-              gcr.io/$PROJECT_ID/discord-bot:$COMMIT_SHA
+            export DOCKER_TOKEN='$$DISCORD_TOKEN'
+            sudo -E bash -c '\
+              gcloud auth configure-docker --quiet && \
+              docker stop discord-bot || true && \
+              docker rm discord-bot || true && \
+              docker pull gcr.io/$PROJECT_ID/discord-bot:$COMMIT_SHA && \
+              docker run -d \
+                --name discord-bot \
+                --restart unless-stopped \
+                -e DISCORD_TOKEN=\"\$$DOCKER_TOKEN\" \
+                -e NODE_ENV=production \
+                gcr.io/$PROJECT_ID/discord-bot:$COMMIT_SHA
+            '
           "
+    secretEnv: ['DISCORD_TOKEN']
+
+availableSecrets:
+  secretManager:
+  - versionName: projects/$PROJECT_ID/secrets/DISCORD_BOT_TOKEN/versions/latest
+    env: 'DISCORD_TOKEN'
 
 options:
   logging: CLOUD_LOGGING_ONLY
-  substitutionOption: ALLOW_LOOSE
