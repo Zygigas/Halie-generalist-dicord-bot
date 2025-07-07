@@ -23,4 +23,7 @@ client.on('messageCreate', async (message) => {
   }
 });
 
+//for debugging only, remove later
+console.log("the bot token is: " + process.env.DISCORD_TOKEN)
+
 client.login(process.env.DISCORD_TOKEN);
