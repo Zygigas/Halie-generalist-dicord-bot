@@ -29,7 +29,8 @@ steps:
           --tunnel-through-iap \
           --ssh-key-file=/root/.ssh/id_rsa \
           --command="
-            export DOCKER_TOKEN='$$DISCORD_TOKEN'
+            export DOCKER_DISCORD_TOKEN='$$DISCORD_TOKEN'
+            export DOCKER_CLIENT_ID='$$CLIENT_ID'
             sudo -E bash -c '\
               gcloud auth configure-docker --quiet && \
               docker stop discord-bot || true && \
@@ -38,17 +39,20 @@ steps:
               docker run -d \
                 --name discord-bot \
                 --restart unless-stopped \
-                -e DISCORD_TOKEN=\"\$$DOCKER_TOKEN\" \
+                -e DISCORD_TOKEN=\"\$$DOCKER_DISCORD_TOKEN\" \
+                -e CLIENT_ID=\"\$$DOCKER_CLIENT_ID\" \
                 -e NODE_ENV=production \
                 gcr.io/$PROJECT_ID/discord-bot:$COMMIT_SHA
             '
           "
-    secretEnv: ['DISCORD_TOKEN']
+    secretEnv: ['DISCORD_TOKEN', CLIENT_ID]
 
 availableSecrets:
   secretManager:
   - versionName: projects/$PROJECT_ID/secrets/DISCORD_BOT_TOKEN/versions/latest
     env: 'DISCORD_TOKEN'
+  - versionName: projects/$PROJECT_ID/secrets/CLIENT_ID/versions/latest
+    env: 'CLIENT_ID'
 
 options:
   logging: CLOUD_LOGGING_ONLY
