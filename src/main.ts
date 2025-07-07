@@ -30,7 +30,4 @@ client.on('error', (error) => {
 // Strip ALL non-visible characters
 const token = `${process.env.DISCORD_TOKEN?.replace(/[^\x20-\x7E]/g, '')}`;
 
-//for debugging only, remove later
-console.log("the bot token is: " + token)
-
 client.login(token);
