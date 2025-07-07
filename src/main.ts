@@ -39,13 +39,6 @@ for (const file of eventFiles) {
   }
 }
 
-client.on("messageCreate", (message) => 
-  {
-    if (message.content == "!test") {
-      message.reply("FUCK OFF!");
-    }
-  })
-
 client.on('ready', () => {
   console.log(`Logged in as ${client.user?.tag}`);
 });
