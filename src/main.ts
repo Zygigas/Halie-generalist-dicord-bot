@@ -23,6 +23,10 @@ client.on('messageCreate', async (message) => {
   }
 });
 
+client.on('error', (error) => {
+  console.error('Discord.js error:', error);
+});
+
 //for debugging only, remove later
 console.log("the bot token is: " + process.env.DISCORD_TOKEN)
 
