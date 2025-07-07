@@ -22,6 +22,9 @@ steps:
         gcloud compute instances add-metadata discord-bot-instance \
           --zone=us-west1-c \
           --metadata=ssh-keys="cloud-build:$(cat /root/.ssh/id_rsa.pub)"
+
+        # debug echo CLIENT_ID
+        echo "$$CLIENT_ID"
         
         # Execute deployment commands
         gcloud compute ssh discord-bot-instance \
