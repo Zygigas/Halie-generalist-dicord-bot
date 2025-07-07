@@ -7,6 +7,16 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/discord-bot:$COMMIT_SHA']
   
+  - name: Trigger Google Cloud Build
+    run: |-
+      gcloud builds submit \
+      --substitutions=_DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }} \
+      --config=cloudbuild.yaml .
+
+  #debug verify discord token actually exists after build.
+  - name: 'ubuntu'
+    args: ['bash', '-c', 'echo "Token length received: ${#_DISCORD_TOKEN} characters"']
+
   # Deploy to Compute Engine
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: bash
@@ -45,6 +55,3 @@ steps:
 options:
   logging: CLOUD_LOGGING_ONLY
   substitutionOption: ALLOW_LOOSE
-
-substitutions:
-  _DISCORD_TOKEN: 'DISCORD_TOKEN'  # Will be replaced by secret
