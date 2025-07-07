@@ -43,5 +43,12 @@ client.on('ready', () => {
   console.log(`Logged in as ${client.user?.tag}`);
 });
 
-client.login(process.env.DISCORD_TOKEN);
+client.on('error', (error) => {
+  console.error('Discord.js error:', error);
+});
+
+// Strip ALL non-visible characters
+const token = `${process.env.DISCORD_TOKEN?.replace(/[^\x20-\x7E]/g, '')}`;
+
+client.login(token);
 deployCommands();
