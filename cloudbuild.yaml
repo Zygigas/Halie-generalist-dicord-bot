@@ -9,28 +9,42 @@ steps:
   
   # Deploy to Compute Engine
   - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: bash
     args:
-      - 'compute'
-      - 'ssh'
-      - 'discord-bot-instance'
-      - '--zone=us-west1-c' 
-      - '--command'
+      - -c
       - |
-        sudo gcloud auth configure-docker --quiet
-        sudo docker stop discord-bot || true
-        sudo docker rm discord-bot || true
-        sudo docker pull gcr.io/$PROJECT_ID/discord-bot:$COMMIT_SHA
-        sudo docker run -d \
-          --name discord-bot \
-          --restart unless-stopped \
-          -e DISCORD_TOKEN=${_DISCORD_TOKEN} \
-          gcr.io/$PROJECT_ID/discord-bot:$COMMIT_SHA
+        # Create a temporary SSH key
+        ssh-keygen -t rsa -f /root/.ssh/id_rsa -q -N ""
+        
+        # Add the public key to the instance metadata
+        gcloud compute instances add-metadata discord-bot-instance \
+          --zone=us-west1-c \
+          --metadata=ssh-keys="cloud-build:$(cat /root/.ssh/id_rsa.pub)"
+        
+        # Wait for the metadata to propagate
+        sleep 30
+        
+        # SSH into the instance and deploy
+        gcloud compute ssh discord-bot-instance \
+          --zone=us-west1-c \
+          --tunnel-through-iap \
+          --ssh-key-file=/root/.ssh/id_rsa \
+          --command="
+            sudo gcloud auth configure-docker --quiet
+            sudo docker stop discord-bot || true
+            sudo docker rm discord-bot || true
+            sudo docker pull gcr.io/$PROJECT_ID/discord-bot:$COMMIT_SHA
+            sudo docker run -d \
+              --name discord-bot \
+              --restart unless-stopped \
+              -e DISCORD_TOKEN=$$DISCORD_TOKEN \
+              -e NODE_ENV=production \
+              gcr.io/$PROJECT_ID/discord-bot:$COMMIT_SHA
+          "
 
-# Optional: Clean up old images
 options:
+  logging: CLOUD_LOGGING_ONLY
   substitutionOption: ALLOW_LOOSE
-  logging: CLOUD_LOGGING_ONLY 
-  substitution_option: ALLOW_LOOSE
 
 substitutions:
   _DISCORD_TOKEN: 'DISCORD_TOKEN'  # Will be replaced by secret
