@@ -37,7 +37,7 @@ steps:
             sudo docker run -d \
               --name discord-bot \
               --restart unless-stopped \
-              -e DISCORD_TOKEN=$$DISCORD_TOKEN \
+              -e DISCORD_TOKEN=${_DISCORD_TOKEN} \
               -e NODE_ENV=production \
               gcr.io/$PROJECT_ID/discord-bot:$COMMIT_SHA
           "
