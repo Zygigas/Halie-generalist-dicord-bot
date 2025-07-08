@@ -10,7 +10,7 @@ export default {
   const hrStart = process.hrtime();
   
   // 2. Immediate response
-  await interaction.reply('🏓 Measuring...');
+  await interaction.reply({ content: '🏓 Measuring...', ephemeral: true} );
   
   // 3. Calculate real perceived latency
   const [seconds, nanoseconds] = process.hrtime(hrStart);
@@ -20,12 +20,12 @@ export default {
       const apiLatency = interaction.client.ws.ping;
 
   // 5. Update with accurate metrics
-  await interaction.editReply([
+  await interaction.editReply({ content:[
     `Here are your stats...`,
     `• Real Latency: ${realLatencyMs}ms (from command press to visible reply)`,
     `• API Heartbeat: ${apiLatency}ms`,
     `_${getSassyRemark(realLatencyMs)}_`
-  ].join('\n'));
+  ].join('\n')});
 },
 }satisfies Command;
   
