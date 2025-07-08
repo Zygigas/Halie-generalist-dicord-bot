@@ -1,11 +1,11 @@
 {
   "name": "Game-notif-bot",
   "version": "0.1.0",
-  "main": "src/main.js",
+  "main": "dist/main.js",
   "scripts": {
-    "start": "node dist/main.js",
+    "start": "node .",
     "build": "tsc",
-    "dev": "ts-node src/main.ts",
+    "dev": "tsc && nodemon .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
