@@ -29,7 +29,7 @@ for (const file of commandFiles) {
 
 // 4. Deploy globally
 new REST().setToken(process.env.DISCORD_TOKEN)
-  .put(Routes.applicationCommands("1391505417149878374"), { body: commands })
+  .put(Routes.applicationCommands(process.env.CLIENT_ID), { body: commands })
   .then(() => console.log(`Successfully deployed ${commands.length} global commands!`))
   .catch(console.error);
 
