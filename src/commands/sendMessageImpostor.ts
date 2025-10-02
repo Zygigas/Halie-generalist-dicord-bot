@@ -10,7 +10,7 @@ export default {
   data: new SlashCommandBuilder()
     .setName('impostor-message')
     .setDescription('Send a message as the bot')
-    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)     
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)     
     .addChannelOption( option =>
       option
         .setName(channelVariableName)
