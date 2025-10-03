@@ -5,7 +5,7 @@ import { Command } from './types/commands';
 import { deployCommands } from './scripts/deployCommands';
 require('dotenv').config();
 
-const client = new Client({
+export const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
