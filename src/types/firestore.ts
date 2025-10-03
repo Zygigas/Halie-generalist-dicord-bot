@@ -6,6 +6,9 @@ type KeysOfType<T, U> = {
 }[keyof T];
 
 export interface UserData {
+  userId: string;
+  guildId: string;
+
   balance: number;
   level: number;
   xp: number;
