@@ -41,21 +41,10 @@ export default {
     let userData = await getUser(targetUser.id, interaction.guildId);
 
     if (!userData) {
-      if (!interaction.guild?.members.fetch(targetUser.id)) {
-        interaction.editReply({
-          content: "Not a valid user, or the user is not in the server",
-        });
-        return;
-      }
-
-      userData = await getOrCreateUser(targetUser.id, interaction.guildId);
-
-      if (!userData) {
-        interaction.editReply({
-          content: "Something went wrong, try again later...",
-        });
-        return;
-      }
+      await interaction.editReply({
+        content: `**${targetUser.username}** doesn't have a profile yet. They need to be verified first.`,
+      });
+      return;
     }
 
     const member = await interaction.guild?.members.fetch(targetUser.id);
