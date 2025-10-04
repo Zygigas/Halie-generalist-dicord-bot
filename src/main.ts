@@ -19,10 +19,11 @@ client.commands = new Collection<string, Command>();
 
 // Load commands
 const commandsPath = path.join(__dirname, 'commands');
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+const commandFiles = fs.readdirSync(commandsPath, {recursive:true, withFileTypes: true})
+  .filter(dirent => dirent.isFile() && dirent.name.endsWith('.js'));;
 
 for (const file of commandFiles) {
-  const filePath = path.join(commandsPath, file);
+  const filePath = path.join(file.parentPath, file.name);
   const command: Command = require(filePath).default;
   client.commands.set(command.data.name, command);
 }
