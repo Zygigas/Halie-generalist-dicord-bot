@@ -79,7 +79,7 @@ export default {
         const moderatorRole = interaction.options.getRole('moderator-role');
         const elderModeratorRole = interaction.options.getRole('elder-moderator-role');
 
-        const settingsToUpdate: any = {};
+        const settingsToUpdate: Partial<ServerSettings> = {};
 
         if (verifiedRole) settingsToUpdate.verifiedRoleId = verifiedRole.id;
         if (startingBalance !== null) settingsToUpdate.startingBalance = startingBalance;
