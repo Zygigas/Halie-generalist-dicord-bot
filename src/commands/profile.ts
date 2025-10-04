@@ -58,6 +58,8 @@ export default {
       }
     }
 
+    const member = await interaction.guild?.members.fetch(targetUser.id);
+
     const profileEmbed = new EmbedBuilder()
       .setColor(targetUser.hexAccentColor ?? 0x000000)
       .setTitle(`✨ ${targetUser.username}'s Profile ✨`)
@@ -72,11 +74,7 @@ export default {
         { name: "✨ XP", value: `\`${userData.xp}\``, inline: true }
       )
       .setFooter({
-        text:
-          `Joined server: ` +
-          interaction.guild?.members.cache
-            .get(targetUser.id)
-            ?.joinedAt?.toDateString(),
+        text: `Joined server: ` + member?.joinedAt?.toDateString(),
       })
       .setTimestamp(targetUser.createdAt);
 
