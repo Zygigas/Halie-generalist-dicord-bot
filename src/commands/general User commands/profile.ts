@@ -5,6 +5,7 @@ import {
 } from "discord.js";
 import { getUser } from "../../services/UserService";
 import { Command } from "../../types/commands";
+import { getServerSettings } from "../../services/ServerSettingsService";
 
 export default {
   data: new SlashCommandBuilder()
@@ -49,6 +50,8 @@ export default {
     const member = await interaction.guild?.members.fetch(targetUser.id);
     const joinTime = member!.joinedAt!.getTime();
 
+    const { currencyName } = await getServerSettings(interaction.guildId)
+
     const profileEmbed = new EmbedBuilder()
       .setColor(targetUser.hexAccentColor ?? 0x000000)
       .setTitle(`✨ ${targetUser.username}'s Profile ✨`)
@@ -56,7 +59,7 @@ export default {
       .addFields(
         {
           name: "💰 Balance",
-          value: `\`${userData.balance.toLocaleString()} coins\``,
+          value: `\`${userData.balance}\` ${currencyName}`,
           inline: true,
         },
         { name: "🌟 Level", value: `\`${userData.level}\``, inline: true },
@@ -64,7 +67,7 @@ export default {
       )
       .setFooter({
         text: `Joined server: ` + dateHelper(Date.now() - joinTime),
-      })
+      });
 
     await interaction.editReply({ embeds: [profileEmbed] });
   },
@@ -90,14 +93,7 @@ function dateHelper(timeInMs: number) {
   let seconds = Math.floor((timeInMs % msPerMinute) / msPerSecond);
 
   let dateConstruct = [years, months, days, hours, minutes, seconds];
-  let dateConstructNames = [
-    "year",
-    "month",
-    "day",
-    "hour",
-    "minute",
-    "second",
-  ];
+  let dateConstructNames = ["year", "month", "day", "hour", "minute", "second"];
   let stringConstruct = "";
 
   let weStartCountingFlag = false;
@@ -111,14 +107,13 @@ function dateHelper(timeInMs: number) {
       }
 
       if (dateConstructNames[i] === "minute") {
-      stringConstruct += " and ";
-    } else if (dateConstructNames[i] === "second") {
-      stringConstruct += " ago";
-    } else {
-      stringConstruct += ", ";
+        stringConstruct += " and ";
+      } else if (dateConstructNames[i] === "second") {
+        stringConstruct += " ago";
+      } else {
+        stringConstruct += ", ";
+      }
     }
-    }
-    
   }
 
   return stringConstruct;
