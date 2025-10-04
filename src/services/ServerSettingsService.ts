@@ -8,6 +8,8 @@ const defaultSettings: ServerSettings = {
   startingBalance: 100,
   logChannelId: undefined,
   verifiedRoleId: undefined,
+  moderatorRoleId: undefined,
+  elderModeratorRoleId: undefined
 };
 
 /**
