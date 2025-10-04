@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, Collection } from 'discord.js';
+import { Client, GatewayIntentBits, Collection, Partials } from 'discord.js';
 import fs from 'fs';
 import path from 'path';
 import { Command } from './types/commands';
@@ -11,7 +11,8 @@ export const client = new Client({
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildMembers
-  ]
+  ],
+  partials: [Partials.GuildMember],
 });
 
 client.commands = new Collection<string, Command>();
