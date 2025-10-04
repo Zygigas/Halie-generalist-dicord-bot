@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, PermissionFlagsBits, PermissionsBitField, TextChannel, ChannelType, GuildMemberRoleManager, Channel, BaseChannel } from 'discord.js';
-import { Command } from '../types/commands';
-import { getServerSettings } from '../services/ServerSettingsService';
+import { Command } from '../../types/commands';
+import { getServerSettings } from '../../services/ServerSettingsService';
 
 const channelVariableName = "target";
 const messageVariableName = "message";

@@ -1,7 +1,7 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, PermissionFlagsBits, EmbedBuilder } from 'discord.js';
-import { Command } from '../types/commands';
-import { getServerSettings, setServerSettings } from '../services/ServerSettingsService';
-import { ServerSettings } from '../types/firestore';
+import { Command } from '../../types/commands';
+import { getServerSettings, setServerSettings } from '../../services/ServerSettingsService';
+import { ServerSettings } from '../../types/firestore';
 
 export default {
   data: new SlashCommandBuilder()

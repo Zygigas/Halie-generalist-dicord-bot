@@ -3,8 +3,8 @@ import {
   EmbedBuilder,
   SlashCommandBuilder,
 } from "discord.js";
-import { getUser } from "../services/UserService";
-import { Command } from "../types/commands";
+import { getUser } from "../../services/UserService";
+import { Command } from "../../types/commands";
 
 export default {
   data: new SlashCommandBuilder()
