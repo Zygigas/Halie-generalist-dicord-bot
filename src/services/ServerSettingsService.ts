@@ -18,16 +18,14 @@ export const defaultSettings: ServerSettings = {
  * @param {string} guildId - The ID of the guild to retrieve settings for.
  * @returns {Promise<ServerSettings>} - A promise that resolves with the server settings for the given guild ID.
  */
-export async function getServerSettings(guildId: string): Promise<ServerSettings> {
+export async function getServerSettings(
+  guildId: string
+): Promise<ServerSettings> {
   const serverDoc = await serversCollection.doc(guildId).get();
 
-  if (!serverDoc.exists) {
-    await serversCollection.doc(guildId).set(defaultSettings);
-  }
+  const savedSettings = serverDoc.data() as ServerSettings | undefined;
 
-  const serverSettings = serverDoc.data() as ServerSettings;
-
-  return { ...defaultSettings, ...serverSettings };
+  return { ...defaultSettings, ...savedSettings };
 }
 
 /**
@@ -35,6 +33,9 @@ export async function getServerSettings(guildId: string): Promise<ServerSettings
  * @param {string} guildId - The ID of the guild to set settings for.
  * @param {Partial<ServerSettings>} settings - The server settings to set.
  */
-export async function setServerSettings(guildId: string, settings: Partial<ServerSettings>): Promise<void> {
-  await serversCollection.doc(guildId).set(settings, { merge: true })
+export async function setServerSettings(
+  guildId: string,
+  settings: Partial<ServerSettings>
+): Promise<void> {
+  await serversCollection.doc(guildId).set(settings, { merge: true });
 }
