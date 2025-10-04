@@ -4,7 +4,7 @@ import {
   Guild,
   SlashCommandBuilder,
 } from "discord.js";
-import { getOrCreateUser, getUser } from "../services/UserService";
+import { getUser } from "../services/UserService";
 import { Command } from "../types/commands";
 
 export default {
