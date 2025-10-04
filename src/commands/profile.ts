@@ -31,6 +31,13 @@ export default {
 
     const targetUser = interaction.options.getUser("user") ?? interaction.user;
 
+    if (targetUser.bot) {
+      interaction.editReply({
+        content: "clankers don't have profiles, they are not people.",
+      });
+      return;
+    }
+
     let userData = await getUser(targetUser.id, interaction.guildId);
 
     if (!userData) {
