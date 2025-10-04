@@ -17,7 +17,7 @@ export interface UserData {
 export interface ServerSettings {
   verifiedRoleId?: string;
   startingBalance?: number;
-  logChannelId?: string; 
+  logChannelId?: string; // TODO: add logging system for the bot.
   moderatorRoleId?: string;
   elderModeratorRoleId?: string;
 }
