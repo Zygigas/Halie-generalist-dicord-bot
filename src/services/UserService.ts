@@ -124,3 +124,47 @@ export async function incrementUserField(
       [field]: FieldValue.increment(amount),
     });
 }
+
+/**
+ * Decrements the given field of a user document in Firestore by the given amount.
+ * If a given user does not exist, this function will create a broken user data. Make sure to always check if a user exists before using this function.
+ * @param {string} userId - The user ID to update.
+ * @param {string} guildId - The guild ID where the user is located.
+ * @param {numberUserFields} field - The field of the user document to update.
+ * @param {number} amount - The amount to decrement the field by.
+ * @returns {Promise<void>} - Resolves when the operation is complete, rejects with an error if an error occurred.
+ */
+export async function decrementUserField(
+  userId: string,
+  guildId: string,
+  field: numberUserFields,
+  amount: number
+): Promise<void> {
+  await getUsersCollectionForGuild(guildId)
+    .doc(userId)
+    .update({
+      [field]: FieldValue.increment(-amount),
+    });
+}
+
+/**
+ * Sets the given field of a user document in Firestore to the given value.
+ * If a given user does not exist, this function will create a broken user data. Make sure to always check if a user exists before using this function.
+ * @param {string} userId - The user ID to update.
+ * @param {string} guildId - The guild ID where the user is located.
+ * @param {keyof UserData} field - The field of the user document to update.
+ * @param {number} value - The value to set the field to.
+ * @returns {Promise<void>} - Resolves when the operation is complete, rejects with an error if an error occurred.
+ */
+export async function setUserField(
+  userId: string,
+  guildId: string,
+  field: keyof UserData,
+  value: number
+): Promise<void> {
+  await getUsersCollectionForGuild(guildId)
+    .doc(userId)
+    .update({
+      [field]: value,
+    });
+}
