@@ -47,6 +47,7 @@ export default {
     }
 
     const member = await interaction.guild?.members.fetch(targetUser.id);
+    const joinTime = member!.joinedAt!.getTime();
 
     const profileEmbed = new EmbedBuilder()
       .setColor(targetUser.hexAccentColor ?? 0x000000)
@@ -62,10 +63,63 @@ export default {
         { name: "✨ XP", value: `\`${userData.xp}\``, inline: true }
       )
       .setFooter({
-        text: `Joined server: ` + member?.joinedAt?.toDateString(),
+        text: `Joined server: ` + dateHelper(Date.now() - joinTime),
       })
-      .setTimestamp(targetUser.createdAt);
 
     await interaction.editReply({ embeds: [profileEmbed] });
   },
 } satisfies Command;
+
+/**
+ * shows the given time as a human readable string
+ * @param timeInMs time in milliseconds
+ */
+function dateHelper(timeInMs: number) {
+  const msPerSecond = 1000;
+  const msPerMinute = msPerSecond * 60;
+  const msPerHour = msPerMinute * 60;
+  const msPerDay = msPerHour * 24;
+  const msPerMonth = msPerDay * (365.25 / 12);
+  const msPerYear = msPerDay * 365.25;
+
+  let years = Math.floor(timeInMs / msPerYear);
+  let months = Math.floor((timeInMs % msPerYear) / msPerMonth);
+  let days = Math.floor((timeInMs % msPerMonth) / msPerDay);
+  let hours = Math.floor((timeInMs % msPerDay) / msPerHour);
+  let minutes = Math.floor((timeInMs % msPerHour) / msPerMinute);
+  let seconds = Math.floor((timeInMs % msPerMinute) / msPerSecond);
+
+  let dateConstruct = [years, months, days, hours, minutes, seconds];
+  let dateConstructNames = [
+    "year",
+    "month",
+    "day",
+    "hour",
+    "minute",
+    "second",
+  ];
+  let stringConstruct = "";
+
+  let weStartCountingFlag = false;
+  for (let i = 0; i < dateConstruct.length; i++) {
+    if (dateConstruct[i] > 0 || weStartCountingFlag) {
+      stringConstruct += `${dateConstruct[i]} ${dateConstructNames[i]}`;
+      weStartCountingFlag = true;
+
+      if (dateConstruct[i] > 1) {
+        stringConstruct += "s";
+      }
+
+      if (dateConstructNames[i] === "minute") {
+      stringConstruct += " and ";
+    } else if (dateConstructNames[i] === "second") {
+      stringConstruct += " ago";
+    } else {
+      stringConstruct += ", ";
+    }
+    }
+    
+  }
+
+  return stringConstruct;
+}
