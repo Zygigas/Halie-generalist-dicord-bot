@@ -15,11 +15,11 @@ export interface UserData {
 }
 
 export interface ServerSettings {
-  verifiedRoleId?: string;
-  startingBalance?: number;
-  logChannelId?: string; // TODO: add logging system for the bot.
-  moderatorRoleId?: string;
-  elderModeratorRoleId?: string;
+  verifiedRoleId: string | null;
+  startingBalance: number | null;
+  logChannelId: string | null; // TODO: add logging system for the bot.
+  moderatorRoleId: string | null;
+  elderModeratorRoleId: string | null;
 }
 
 export type numberUserFields = KeysOfType<UserData, number>;
