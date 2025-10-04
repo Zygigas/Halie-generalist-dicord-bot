@@ -4,12 +4,12 @@ import { ServerSettings } from "../types/firestore";
 const serversCollection = FirestoreClient.dataBase.collection("Halie-Servers");
 
 // change this to change the global default settings for the bot.
-const defaultSettings: ServerSettings = {
+export const defaultSettings: ServerSettings = {
   startingBalance: 100,
   logChannelId: null,
   verifiedRoleId: null,
   moderatorRoleId: null,
-  elderModeratorRoleId: null
+  elderModeratorRoleId: null,
 };
 
 /**

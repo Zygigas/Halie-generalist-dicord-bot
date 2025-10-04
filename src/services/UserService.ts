@@ -3,7 +3,7 @@ import FirestoreClient from "../libraries/FirestoreClient/FirestoreClient";
 import { numberUserFields, UserData } from "../types/firestore";
 import { client } from "../main";
 import { FieldValue } from "firebase-admin/firestore";
-import { getServerSettings } from './ServerSettingsService';
+import { defaultSettings, getServerSettings } from './ServerSettingsService';
 
 //remeber to keep this consistant, potential TODO: add a proper sstrict schema verifier.
 const serversCollection = FirestoreClient.dataBase.collection("Halie-Servers");
@@ -51,7 +51,7 @@ async function createUser(
     userId: userId,
     guildId: guildId,
 
-    balance: startingBalance ?? 0,
+    balance: startingBalance ?? defaultSettings.startingBalance as number,
     level: 1,
     xp: 0,
   };
