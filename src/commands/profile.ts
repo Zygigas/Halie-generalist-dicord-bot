@@ -1,7 +1,6 @@
 import {
   ChatInputCommandInteraction,
   EmbedBuilder,
-  Guild,
   SlashCommandBuilder,
 } from "discord.js";
 import { getUser } from "../services/UserService";

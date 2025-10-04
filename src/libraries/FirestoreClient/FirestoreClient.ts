@@ -1,5 +1,4 @@
 import * as admin from "firebase-admin";
-import path from "path";
 
 class FirestoreClient {
   private static instance: FirestoreClient;

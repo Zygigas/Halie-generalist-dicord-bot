@@ -1,6 +1,5 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, PermissionFlagsBits, PermissionsBitField, TextChannel, ChannelType, GuildMemberRoleManager } from 'discord.js';
+import { SlashCommandBuilder, ChatInputCommandInteraction, PermissionFlagsBits, PermissionsBitField, TextChannel, ChannelType, GuildMemberRoleManager, Channel, BaseChannel } from 'discord.js';
 import { Command } from '../types/commands';
-import { permission } from 'process';
 import { getServerSettings } from '../services/ServerSettingsService';
 
 const channelVariableName = "target";

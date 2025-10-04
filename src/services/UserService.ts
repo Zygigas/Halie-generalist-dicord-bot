@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, Client, User } from "discord.js";
+import { User } from "discord.js";
 import FirestoreClient from "../libraries/FirestoreClient/FirestoreClient";
 import { numberUserFields, UserData } from "../types/firestore";
 import { client } from "../main";
