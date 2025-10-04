@@ -81,7 +81,7 @@ export default {
         const settingsToUpdate: any = {};
 
         if (verifiedRole) settingsToUpdate.verifiedRoleId = verifiedRole.id;
-        if (startingBalance) settingsToUpdate.startingBalance = startingBalance;
+        if (startingBalance !== null) settingsToUpdate.startingBalance = startingBalance;
         if (logChannel) settingsToUpdate.logChannelId = logChannel.id;
         if (moderatorRole) settingsToUpdate.moderatorRoleId = moderatorRole.id;
         if (elderModeratorRole) settingsToUpdate.elderModeratorRoleId = elderModeratorRole.id;
