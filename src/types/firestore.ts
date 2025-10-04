@@ -14,4 +14,10 @@ export interface UserData {
   xp: number;
 }
 
+export interface ServerSettings {
+  verifiedRoleId?: string;
+  startingBalance?: number;
+  logChannelId?: string; 
+}
+
 export type numberUserFields = KeysOfType<UserData, number>;
