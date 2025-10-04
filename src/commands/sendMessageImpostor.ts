@@ -48,7 +48,7 @@ export default {
 
   const member = interaction.member;
   const memberIsAdmin = (member?.permissions as PermissionsBitField).has(PermissionsBitField.Flags.Administrator);
-  const memberIsElder = (member?.roles as GuildMemberRoleManager).cache.has(elderModeratorRoleId!); 
+  const memberIsElder = elderModeratorRoleId ? (member?.roles as GuildMemberRoleManager).cache.has(elderModeratorRoleId) : false; 
 
   if (!memberIsAdmin && !memberIsElder) {
     await interaction.reply({content:"You can't use this command... you idiot.", ephemeral:true})
