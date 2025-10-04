@@ -36,7 +36,7 @@ export default {
   }
     
   // channel type validation check
-  if ( !(targetChannel.type == ChannelType.GuildText || targetChannel.type == ChannelType.DM) ) {
+  if ( !(targetChannel as BaseChannel).isTextBased() ) {
     await interaction.reply({content:"You can't send messages to this channel... you idiot.",ephemeral:true});
     return;
   }
