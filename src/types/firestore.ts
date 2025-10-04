@@ -13,6 +13,8 @@ export interface UserData {
 }
 
 export interface ServerSettings {
+  currencyName: string | null;
+
   verifiedRoleId: string | null;
   startingBalance: number | null;
   logChannelId: string | null; // TODO: add logging system for the bot.

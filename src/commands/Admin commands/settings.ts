@@ -23,7 +23,7 @@ export default {
         )
         .addIntegerOption(option =>
           option.setName('starting-balance')
-            .setDescription('The amount of coins a new user starts with.')
+            .setDescription('The amount of currency a new user starts with.')
         )
         .addChannelOption(option =>
           option.setName('log-channel')
@@ -36,6 +36,10 @@ export default {
         .addRoleOption(option =>
           option.setName('elder-moderator-role')
             .setDescription('the role elder/senior moderators have.')
+        )
+        .addStringOption(option =>
+          option.setName('currency-name')
+            .setDescription('Name of the currency on the server.')
         )
         
     ),
@@ -60,7 +64,7 @@ export default {
         .setColor('#5865F2')
         .addFields(
           { name: 'Verified Role', value: settings.verifiedRoleId ? `<@&${settings.verifiedRoleId}>` : 'Not Set' },
-          { name: 'Starting Balance', value: `\`${settings.startingBalance?.toLocaleString() ?? 'Default'}\` coins` },
+          { name: 'Starting Balance', value: `\`${settings.startingBalance?.toLocaleString()}\` ${settings.currencyName}` },
           { name: 'Log Channel', value: settings.logChannelId ? `<#${settings.logChannelId}>` : 'Not Set' },
           { name: 'Moderator Role', value: settings.moderatorRoleId ? `<@&${settings.moderatorRoleId}>` : 'Not Set' },
           { name: 'Elder Moderator Role', value: settings.elderModeratorRoleId ? `<@&${settings.elderModeratorRoleId}>` : 'Not Set' },
@@ -78,14 +82,16 @@ export default {
         const logChannel = interaction.options.getChannel('log-channel');
         const moderatorRole = interaction.options.getRole('moderator-role');
         const elderModeratorRole = interaction.options.getRole('elder-moderator-role');
+        const currencyName = interaction.options.getString('currency-name');
 
         const settingsToUpdate: Partial<ServerSettings> = {};
 
         if (verifiedRole) settingsToUpdate.verifiedRoleId = verifiedRole.id;
-        if (startingBalance !== null) settingsToUpdate.startingBalance = startingBalance;
+        if (startingBalance) settingsToUpdate.startingBalance = startingBalance;
         if (logChannel) settingsToUpdate.logChannelId = logChannel.id;
         if (moderatorRole) settingsToUpdate.moderatorRoleId = moderatorRole.id;
         if (elderModeratorRole) settingsToUpdate.elderModeratorRoleId = elderModeratorRole.id;
+        if (currencyName) settingsToUpdate.currencyName = currencyName;
 
         if (Object.keys(settingsToUpdate).length === 0) {
         await interaction.editReply('You must provide at least one setting to update.');
