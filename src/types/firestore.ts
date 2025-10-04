@@ -18,6 +18,8 @@ export interface ServerSettings {
   verifiedRoleId?: string;
   startingBalance?: number;
   logChannelId?: string; 
+  moderatorRoleId?: string;
+  elderModeratorRoleId?: string;
 }
 
 export type numberUserFields = KeysOfType<UserData, number>;
