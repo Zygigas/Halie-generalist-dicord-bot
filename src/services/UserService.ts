@@ -3,6 +3,7 @@ import FirestoreClient from "../libraries/FirestoreClient/FirestoreClient";
 import { numberUserFields, UserData } from "../types/firestore";
 import { client } from "../main";
 import { FieldValue } from "firebase-admin/firestore";
+import { getServerSettings } from './ServerSettingsService';
 
 //remeber to keep this consistant, potential TODO: add a proper sstrict schema verifier.
 const serversCollection = FirestoreClient.dataBase.collection("Halie-Servers");
@@ -43,11 +44,14 @@ async function createUser(
   guildId: string
 ): Promise<UserData | null> {
   const userId = discordUser.id;
+
+  const { startingBalance } = await getServerSettings(guildId);
+
   const userData: UserData = {
     userId: userId,
     guildId: guildId,
 
-    balance: 100, // TODO: make this depend on a server variable later.
+    balance: startingBalance ?? 0,
     level: 1,
     xp: 0,
   };
