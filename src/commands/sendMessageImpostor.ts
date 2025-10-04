@@ -24,7 +24,7 @@ export default {
     ),
   async execute(interaction: ChatInputCommandInteraction) {
 
-  var targetChannel = interaction.options.getChannel(channelVariableName, true);
+  let targetChannel = interaction.options.getChannel(channelVariableName, true);
   const messageContent = interaction.options.getString(messageVariableName, true);
 
   if (!interaction.guildId) {
