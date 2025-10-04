@@ -1,5 +1,5 @@
 import { GuildMember } from 'discord.js';
-import { getOrCreateUser } from '../services/UserService';
+import { CreateUserSafe } from '../services/UserService';
 import { getServerSettings } from '../services/ServerSettingsService';
 
 export default {
@@ -19,7 +19,7 @@ export default {
       try {
         // Use getOrCreateUser as a safe way to create the profile.
         // It will only create if one doesn't already exist.
-        await getOrCreateUser(newMember.id, newMember.guild.id);
+        await CreateUserSafe(newMember.id, newMember.guild.id);
       } catch (error) {
         console.error(`Failed to create profile for ${newMember.user.tag}:`, error);
       }

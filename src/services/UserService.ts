@@ -3,7 +3,7 @@ import FirestoreClient from "../libraries/FirestoreClient/FirestoreClient";
 import { numberUserFields, UserData } from "../types/firestore";
 import { client } from "../main";
 import { FieldValue } from "firebase-admin/firestore";
-import { getServerSettings } from './ServerSettingsService';
+import { getServerSettings } from "./ServerSettingsService";
 
 //remeber to keep this consistant, potential TODO: add a proper sstrict schema verifier.
 const serversCollection = FirestoreClient.dataBase.collection("Halie-Servers");
@@ -39,14 +39,23 @@ export async function getUser(
  * @param {string} guildId - The guild ID where the user is located.
  * @returns {Promise<UserData|null>} - The created user data if successful, otherwise null if an error occurred.
  */
-async function createUser(
+async function createUserUnsafe(
   discordUser: User,
   guildId: string
 ): Promise<UserData | null> {
   const userId = discordUser.id;
 
-  const { startingBalance } = await getServerSettings(guildId);
+  const userData = await generateNewUserData(userId, guildId);
 
+  await getUsersCollectionForGuild(guildId).doc(userId).set(userData);
+  return userData;
+}
+
+export async function generateNewUserData(
+  userId: string,
+  guildId: string
+): Promise<UserData> {
+  const { startingBalance } = await getServerSettings(guildId);
   const userData: UserData = {
     userId: userId,
     guildId: guildId,
@@ -55,26 +64,43 @@ async function createUser(
     level: 1,
     xp: 0,
   };
-  await getUsersCollectionForGuild(guildId).doc(userId).set(userData);
   return userData;
 }
 
-/**
- * Retrieves a user document from Firestore for the given userId and guildId.
- * If the document does not exist, creates a new user document in Firestore with the given discord user and guild ID.
- * @param {string} userId - The user ID to retrieve.
- * @param {string} guildId - The guild ID where the user is located.
- * @returns {Promise<UserData | null>} - The retrieved user data if successful, otherwise null if an error occurred.
- */
-export async function getOrCreateUser(
+export async function CreateUserSafe(
   userId: string,
   guildId: string
 ): Promise<UserData | null> {
   const existingUser = await getUser(userId, guildId);
-  if (existingUser) return existingUser;
-  const discordUser = await client.users.fetch(userId);
-  const newUser = await createUser(discordUser, guildId);
-  return newUser;
+  if (!existingUser) {
+    const discordUser = await client.users.fetch(userId);
+    return await createUserUnsafe(discordUser, guildId);
+  }
+
+  const sourceOfTruth: UserData = await generateNewUserData(userId, guildId);
+
+  let schemaNeedsUpdate = false;
+  const updatePayload: Partial<UserData> = {};
+
+  for (const key of Object.keys(sourceOfTruth)) {
+    const typedKey = key as keyof UserData;
+
+    if (
+      !Object.prototype.hasOwnProperty.call(existingUser, typedKey) ||
+      typeof existingUser[typedKey] !== typeof sourceOfTruth[typedKey]
+    ) {
+      schemaNeedsUpdate = true;
+      (updatePayload as any)[typedKey] = sourceOfTruth[typedKey];
+    }
+
+    if (schemaNeedsUpdate) {
+      await getUsersCollectionForGuild(guildId)
+        .doc(userId)
+        .update(updatePayload);
+      return { ...existingUser, ...updatePayload };
+    }
+  }
+  return existingUser;
 }
 
 /**
