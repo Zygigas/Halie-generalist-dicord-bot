@@ -41,6 +41,14 @@ export default {
           option.setName('currency-name')
             .setDescription('Name of the currency on the server.')
         )
+        .addChannelOption(option =>
+          option.setName('xp-disabled-channel')
+            .setDescription('The channel where xp is disabled.')
+        )
+        .addChannelOption(option =>
+          option.setName('xp-enabled-channel')
+          .setDescription('The channel where xp is enabled.')
+        )
         
     ),
 
@@ -59,6 +67,10 @@ export default {
       await interaction.deferReply({ ephemeral: true });
       const settings = await getServerSettings(interaction.guildId);
 
+      const disabledChannelsForXp = settings.levelingDisabledChannels && settings.levelingDisabledChannels.length > 0
+        ? settings.levelingDisabledChannels.map(id => `<#${id}>`).join('\n')
+        : 'None';
+
       const embed = new EmbedBuilder()
         .setTitle('Server Settings')
         .setColor('#5865F2')
@@ -68,6 +80,7 @@ export default {
           { name: 'Log Channel', value: settings.logChannelId ? `<#${settings.logChannelId}>` : 'Not Set' },
           { name: 'Moderator Role', value: settings.moderatorRoleId ? `<@&${settings.moderatorRoleId}>` : 'Not Set' },
           { name: 'Elder Moderator Role', value: settings.elderModeratorRoleId ? `<@&${settings.elderModeratorRoleId}>` : 'Not Set' },
+          { name: 'xp disabled channels', value: disabledChannelsForXp },
         );
       
       await interaction.editReply({ embeds: [embed] });
@@ -83,8 +96,12 @@ export default {
         const moderatorRole = interaction.options.getRole('moderator-role');
         const elderModeratorRole = interaction.options.getRole('elder-moderator-role');
         const currencyName = interaction.options.getString('currency-name');
+        const xpDisabledChannel = interaction.options.getChannel('xp-disabled-channel');
+        const xpEnabledChannel = interaction.options.getChannel('xp-enabled-channel');
 
         const settingsToUpdate: Partial<ServerSettings> = {};
+
+        const disabledChannels = (await getServerSettings(interaction.guildId)).levelingDisabledChannels;
 
         if (verifiedRole) settingsToUpdate.verifiedRoleId = verifiedRole.id;
         if (startingBalance) settingsToUpdate.startingBalance = startingBalance;
@@ -92,6 +109,17 @@ export default {
         if (moderatorRole) settingsToUpdate.moderatorRoleId = moderatorRole.id;
         if (elderModeratorRole) settingsToUpdate.elderModeratorRoleId = elderModeratorRole.id;
         if (currencyName) settingsToUpdate.currencyName = currencyName;
+        if (xpDisabledChannel) settingsToUpdate.levelingDisabledChannels = [...(disabledChannels || []), xpDisabledChannel.id];
+
+        if (xpEnabledChannel) {
+          if (disabledChannels === null) {
+
+          } else if (disabledChannels.includes(xpEnabledChannel.id)) {
+            settingsToUpdate.levelingDisabledChannels = disabledChannels.filter(id => id !== xpEnabledChannel.id);
+          }
+
+        }
+
 
         if (Object.keys(settingsToUpdate).length === 0) {
         await interaction.editReply('You must provide at least one setting to update.');
