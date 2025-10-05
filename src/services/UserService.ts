@@ -39,7 +39,7 @@ export async function getUser(
  * @param {string} guildId - The guild ID where the user is located.
  * @returns {Promise<UserData|null>} - The created user data if successful, otherwise null if an error occurred.
  */
-async function createUserUnsafe(
+export async function createUserUnsafe(
   discordUser: User,
   guildId: string
 ): Promise<UserData | null> {
