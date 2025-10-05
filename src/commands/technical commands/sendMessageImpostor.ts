@@ -1,6 +1,6 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction, PermissionFlagsBits, PermissionsBitField, TextChannel, ChannelType, GuildMemberRoleManager } from 'discord.js';
-import { Command } from '../types/commands';
-import { permission } from 'process';
+import { SlashCommandBuilder, ChatInputCommandInteraction, PermissionFlagsBits, PermissionsBitField, TextChannel, ChannelType, GuildMemberRoleManager, Channel, BaseChannel } from 'discord.js';
+import { Command } from '../../types/commands';
+import { getServerSettings } from '../../services/ServerSettingsService';
 
 const channelVariableName = "target";
 const messageVariableName = "message";
@@ -24,24 +24,32 @@ export default {
     ),
   async execute(interaction: ChatInputCommandInteraction) {
 
-  var targetChannel = interaction.options.getChannel(channelVariableName, true);
+  let targetChannel = interaction.options.getChannel(channelVariableName, true);
   const messageContent = interaction.options.getString(messageVariableName, true);
+
+  if (!interaction.guildId) {
+    await interaction.reply({
+      content: "This command can only be used in a server.",
+      ephemeral:true
+    })
+    return;
+  }
     
   // channel type validation check
-  if ( !(targetChannel.type == ChannelType.GuildText || targetChannel.type == ChannelType.DM) ) {
+  if ( !(targetChannel as BaseChannel).isTextBased() ) {
     await interaction.reply({content:"You can't send messages to this channel... you idiot.",ephemeral:true});
     return;
   }
 
   targetChannel = targetChannel as TextChannel;
 
+  const { elderModeratorRoleId } = await getServerSettings(interaction.guildId);
+
   const member = interaction.member;
   const memberIsAdmin = (member?.permissions as PermissionsBitField).has(PermissionsBitField.Flags.Administrator);
-  // hardcoding the elder mod for now since I can't be arsed.
-  // later on it could be moved into server settings once we have that set up. For not this works.
-  const memberIsModerator = (member?.roles as GuildMemberRoleManager).cache.has("1386398927405842482"); 
+  const memberIsElder = elderModeratorRoleId ? (member?.roles as GuildMemberRoleManager).cache.has(elderModeratorRoleId) : false; 
 
-  if (!memberIsAdmin && !memberIsModerator) {
+  if (!memberIsAdmin && !memberIsElder) {
     await interaction.reply({content:"You can't use this command... you idiot.", ephemeral:true})
     return;
   }

@@ -14,12 +14,12 @@ if (!process.env.CLIENT_ID) throw new Error('Missing CLIENT_ID in .env');
 
 // 3. Load all command files
 const commandsPath = path.join(__dirname, '../commands');
-const commandFiles = fs.readdirSync(commandsPath)
-  .filter(file => file.endsWith('.js'));
+const commandFiles = fs.readdirSync(commandsPath, {recursive:true, withFileTypes: true})
+  .filter(dirent => dirent.isFile() && dirent.name.endsWith('.js'));;
 
 const commands = [];
 for (const file of commandFiles) {
-  const filePath = path.join(commandsPath, file);
+  const filePath = path.join(file.parentPath , file.name);
   const command = require(filePath).default;
   if (command?.data) {
     commands.push(command.data.toJSON());
