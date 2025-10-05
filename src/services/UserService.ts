@@ -92,14 +92,13 @@ export async function CreateUserSafe(
       schemaNeedsUpdate = true;
       (updatePayload as any)[typedKey] = sourceOfTruth[typedKey];
     }
-
-    if (schemaNeedsUpdate) {
+  }
+  if (schemaNeedsUpdate) {
       await getUsersCollectionForGuild(guildId)
         .doc(userId)
         .update(updatePayload);
       return { ...existingUser, ...updatePayload };
     }
-  }
   return existingUser;
 }
 
