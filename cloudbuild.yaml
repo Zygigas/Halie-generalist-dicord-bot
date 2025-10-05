@@ -22,6 +22,16 @@ steps:
         gcloud compute instances add-metadata discord-bot-instance \
           --zone=us-west1-c \
           --metadata=ssh-keys="cloud-build:$(cat /root/.ssh/id_rsa.pub)"
+
+        # Create .env file from secrets
+        echo "DISCORD_TOKEN=$$DISCORD_TOKEN" > discord.env
+        echo "CLIENT_ID=$$CLIENT_ID" >> discord.env
+        echo "DATABASE_LOGIN=$$DATABASE_LOGIN" >> discord.env
+
+        gcloud compute scp ./discord.env discord-bot-instance:~/discord.env \
+          --zone=us-west1-c \
+          --tunnel-through-iap \
+          --ssh-key-file=/root/.ssh/id_rsa
         
         # Execute deployment commands
         gcloud compute ssh discord-bot-instance \
@@ -37,9 +47,7 @@ steps:
               docker run -d \
                 --name discord-bot \
                 --restart unless-stopped \
-                 -e DISCORD_TOKEN='$$DISCORD_TOKEN' \
-                 -e CLIENT_ID='$$CLIENT_ID' \
-                 -e DATABASE_LOGIN='$$DATABASE_LOGIN' \
+                --env-file ~/discord.env \
                 gcr.io/$PROJECT_ID/discord-bot:$COMMIT_SHA
             '
           "
