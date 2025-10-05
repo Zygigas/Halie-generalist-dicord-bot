@@ -2,6 +2,7 @@ import {
   ChatInputCommandInteraction,
   EmbedBuilder,
   SlashCommandBuilder,
+  TextChannel,
 } from "discord.js";
 import { getUser } from "../../services/UserService";
 import { Command } from "../../types/commands";
@@ -69,7 +70,8 @@ export default {
         text: `Joined server: ` + dateHelper(Date.now() - joinTime),
       });
 
-    await interaction.editReply({ embeds: [profileEmbed] });
+    await interaction.editReply({ content: "Profile loaded succesfully." });
+    await (interaction.channel as TextChannel).send({ embeds: [profileEmbed] });
   },
 } satisfies Command;
 
