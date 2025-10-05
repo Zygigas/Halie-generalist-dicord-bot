@@ -37,9 +37,9 @@ steps:
               docker run -d \
                 --name discord-bot \
                 --restart unless-stopped \
-                -e DISCORD_TOKEN=$$DISCORD_TOKEN \
-                -e CLIENT_ID=$$CLIENT_ID \
-                -e DATABASE_LOGIN=$$DATABASE_LOGIN \
+                 -e DISCORD_TOKEN='$$DISCORD_TOKEN' \
+                 -e CLIENT_ID='$$CLIENT_ID' \
+                 -e DATABASE_LOGIN='$$DATABASE_LOGIN' \
                 gcr.io/$PROJECT_ID/discord-bot:$COMMIT_SHA
             '
           "
