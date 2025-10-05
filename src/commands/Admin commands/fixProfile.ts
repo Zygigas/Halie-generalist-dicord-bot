@@ -14,7 +14,7 @@ export default {
   data: new SlashCommandBuilder()
     .setName("fix-profile")
     .setDescription("Fixes or resets user profiles on the server.")
-    .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild) // Admin-only command
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages) // mod-only command
     .addUserOption((option) =>
       option
         .setName("user")
