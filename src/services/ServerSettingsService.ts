@@ -12,6 +12,8 @@ export const defaultSettings: ServerSettings = {
   verifiedRoleId: null,
   moderatorRoleId: null,
   elderModeratorRoleId: null,
+
+  levelingDisabledChannels: null,
 };
 
 /**

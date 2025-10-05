@@ -20,6 +20,7 @@ export interface ServerSettings {
   logChannelId: string | null; // TODO: add logging system for the bot.
   moderatorRoleId: string | null;
   elderModeratorRoleId: string | null;
+  levelingDisabledChannels: string[] | null;
 }
 
 export type numberUserFields = KeysOfType<UserData, number>;
