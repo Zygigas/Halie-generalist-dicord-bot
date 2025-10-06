@@ -1,6 +1,9 @@
 # Use official Node.js image
 FROM node:22-alpine
 
+# Install Python, which is a dependency for youtube-dl-exec
+RUN apk update && apk add --no-cache python3 py3-pip
+
 # Create app directory
 WORKDIR /usr/src/app
 
