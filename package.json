@@ -16,13 +16,19 @@
     "nodemon": "^3.1.10"
   },
   "dependencies": {
+    "@discordjs/opus": "^0.10.0",
+    "@discordjs/voice": "^0.19.0",
+    "@snazzah/davey": "^0.1.7",
     "@types/node": "^24.0.10",
     "@typescript-eslint/eslint-plugin": "^8.35.1",
     "@typescript-eslint/parser": "^8.35.1",
     "discord.js": "^14.21.0",
     "dotenv": "^17.0.1",
+    "ffmpeg-static": "^5.2.0",
     "firebase-admin": "^13.5.0",
+    "libsodium-wrappers": "^0.7.15",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "youtube-dl-exec": "^3.0.25"
   }
 }
