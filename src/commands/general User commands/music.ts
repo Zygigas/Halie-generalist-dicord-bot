@@ -3,7 +3,7 @@ import {
   SlashCommandBuilder,
   VoiceChannel,
   ChannelType,
-  GuildMember,
+  TextChannel,
 } from "discord.js";
 import {
   createAudioPlayer,
@@ -13,14 +13,15 @@ import {
   AudioPlayerStatus,
   VoiceConnectionStatus,
   entersState,
+  VoiceConnection,
 } from "@discordjs/voice";
-import ytdl from "ytdl-core";
+import ytDlp, { Payload } from "youtube-dl-exec";
 import { Command } from "../../types/commands";
 
 export default {
   data: new SlashCommandBuilder()
     .setName("music-player")
-    .setDescription("Play music from a provided YouTube link in a voice channel.")
+    .setDescription("Play music from a provided YouTube link using yt-dlp.")
     .addStringOption((option) =>
       option
         .setName("url")
@@ -36,33 +37,51 @@ export default {
     ),
 
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply();
+    await interaction.deferReply({ ephemeral: true });
 
     const url = interaction.options.getString("url", true);
-
-    if (!ytdl.validateURL(url)) {
-      await interaction.editReply({
-        content: "Please provide a valid YouTube URL!",
-      });
-      return;
-    }
-
-    let targetChannel = interaction.options.getChannel("voice-channel") as VoiceChannel;
-
-    if (!targetChannel) {
-      const member = await interaction.guild?.members.fetch(interaction.user.id);
-      if (member?.voice.channel) {
-        targetChannel = member.voice.channel as VoiceChannel;
-      } else {
-        await interaction.editReply({
-          content: "You must be in a voice channel or specify one to play music.",
-        });
-        return;
-      }
-    }
+    let connection: VoiceConnection;
 
     try {
-      const connection = joinVoiceChannel({
+      const videoInfo = await ytDlp(url, {
+        dumpSingleJson: true,
+        noWarnings: true,
+        preferFreeFormats: true,
+      });
+
+      let targetChannel = interaction.options.getChannel("voice-channel") as VoiceChannel;
+      if (!targetChannel) {
+        const member = await interaction.guild?.members.fetch(interaction.user.id);
+        if (member?.voice.channel) {
+          targetChannel = member.voice.channel as VoiceChannel;
+        } else {
+          await interaction.editReply({
+            content: "You must be in a voice channel or specify one to play music.",
+          });
+          return;
+        }
+      }
+
+      const ytDlpProcess = ytDlp.exec(
+        url,
+        {
+          format: 'bestaudio[ext=opus]/bestaudio/best',
+          output: '-', 
+          rmCacheDir: true,
+        }
+      );
+
+      if (!ytDlpProcess.stdout) {
+          throw new Error("Could not get a readable stream from yt-dlp.");
+      }
+      
+      const audioStream = ytDlpProcess.stdout;
+
+      ytDlpProcess.stderr?.on('data', (data) => {
+        console.error(`[yt-dlp stderr]: ${data.toString()}`);
+      });
+
+      connection = joinVoiceChannel({
         channelId: targetChannel.id,
         guildId: interaction.guildId!,
         adapterCreator: interaction.guild!.voiceAdapterCreator,
@@ -70,36 +89,37 @@ export default {
 
       await entersState(connection, VoiceConnectionStatus.Ready, 30_000);
 
-      const stream = ytdl(url, {
-        filter: "audioonly",
-        quality: "highestaudio",
-        highWaterMark: 1 << 25, 
-      });
-
       const player = createAudioPlayer();
-      const resource = createAudioResource(stream, {
-        inputType: StreamType.Arbitrary,
-      });
+      const resource = createAudioResource(audioStream, { inputType: StreamType.Arbitrary });
 
       player.play(resource);
       connection.subscribe(player);
 
-      await interaction.editReply(`Now playing: ${url}`);
+      const title = (videoInfo as Payload).title ?? "the requested song";
+
+      await interaction.editReply({ content: `Song loaded succesfully!` });
+
+      await (interaction.channel as TextChannel).send(`Now playing: **${title}**`).then((message) =>{setTimeout(() => {
+        message.delete();
+      }, 5000 /* 5 seconds */);});
 
       player.on(AudioPlayerStatus.Idle, () => {
-        connection.destroy();
+        if (connection?.state.status !== VoiceConnectionStatus.Destroyed) {
+          connection.destroy();
+        }
       });
-
+      
       player.on("error", (error) => {
-        console.error(`Error in audio player: ${error.message}`);
-        connection.destroy(); 
+        console.error(`Audio Player Error: ${error.message}`);
+        if (!ytDlpProcess.killed) ytDlpProcess.kill();
+        if (connection?.state.status !== VoiceConnectionStatus.Destroyed) {
+          connection.destroy();
+        }
       });
 
     } catch (error) {
       console.error(error);
-      await interaction.editReply({
-        content: "There was an error trying to play the song! Please try again.",
-      });
+      await interaction.editReply({ content: "An error occurred. Please check the console for details." });
     }
   },
 } satisfies Command;
