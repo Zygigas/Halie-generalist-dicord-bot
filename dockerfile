@@ -2,7 +2,7 @@
 FROM node:22-alpine
 
 # Install Python, which is a dependency for youtube-dl-exec
-RUN apk update && apk add --no-cache python3 py3-pip
+RUN apk update && apk add --no-cache python3 py3-pip make g++ build-base
 
 # Create app directory
 WORKDIR /usr/src/app
