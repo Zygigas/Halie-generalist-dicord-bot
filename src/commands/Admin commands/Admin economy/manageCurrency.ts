@@ -95,7 +95,7 @@ export default {
     }
 
     switch (subcommand) {
-      case "give":
+      case "add":
         await incrementUserField(
           targetUser.id,
           interaction.guildId,
